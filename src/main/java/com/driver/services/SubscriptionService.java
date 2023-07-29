@@ -74,17 +74,17 @@ public class SubscriptionService {
         else if(subscription.getSubscriptionType()==BASIC){
             subscription.setSubscriptionType(PRO);
             int revisedAmount = 800+(250*subscription.getNoOfScreensSubscribed());
-            subscription.setTotalAmountPaid(revisedAmount);
             priceDiff = revisedAmount-subscription.getTotalAmountPaid();
-            subscriptionRepository.save(subscription);
+            subscription.setTotalAmountPaid(revisedAmount);
+
         }
         else if(subscription.getSubscriptionType()==PRO){
             subscription.setSubscriptionType(ELITE);
             int revisedAmount = 1000+(350*subscription.getNoOfScreensSubscribed());
-            subscription.setTotalAmountPaid(revisedAmount);
             priceDiff = revisedAmount-subscription.getTotalAmountPaid();
-            subscriptionRepository.save(subscription);
+            subscription.setTotalAmountPaid(revisedAmount);
         }
+        subscriptionRepository.save(subscription);
         return priceDiff;
     }
 
