@@ -44,8 +44,12 @@ public class SubscriptionController {
     public Integer getTotalRevenue(){
 
         //Calculate the total Revenue of hot-star from all the Users combined...
-        return subscriptionService.calculateTotalRevenueOfHotstar();
-
+        try {
+            return subscriptionService.calculateTotalRevenueOfHotstar();
+        }
+        catch (Exception e){
+            return -1;
+        }
     }
 
 }
