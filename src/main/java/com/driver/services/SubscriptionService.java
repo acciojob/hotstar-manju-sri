@@ -73,12 +73,16 @@ public class SubscriptionService {
         }
         else if(subscription.getSubscriptionType()==BASIC){
             subscription.setSubscriptionType(PRO);
-            priceDiff = (800+(250*subscription.getNoOfScreensSubscribed()))-subscription.getTotalAmountPaid();
+            int revisedAmount = 800+(250*subscription.getNoOfScreensSubscribed());
+            subscription.setTotalAmountPaid(revisedAmount);
+            priceDiff = revisedAmount-subscription.getTotalAmountPaid();
             subscriptionRepository.save(subscription);
         }
         else if(subscription.getSubscriptionType()==PRO){
             subscription.setSubscriptionType(ELITE);
-            priceDiff = (1000+(350*subscription.getNoOfScreensSubscribed()))-subscription.getTotalAmountPaid();
+            int revisedAmount = 1000+(350*subscription.getNoOfScreensSubscribed());
+            subscription.setTotalAmountPaid(revisedAmount);
+            priceDiff = revisedAmount-subscription.getTotalAmountPaid();
             subscriptionRepository.save(subscription);
         }
         return priceDiff;
@@ -92,7 +96,7 @@ public class SubscriptionService {
 
         int revenue = 0;
         for(Subscription subscription: subscriptionList){
-            revenue = subscription.getTotalAmountPaid()+revenue;
+            revenue = revenue + subscription.getTotalAmountPaid();
         }
         return revenue;
     }
