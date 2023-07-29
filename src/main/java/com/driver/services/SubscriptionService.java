@@ -2,16 +2,19 @@ package com.driver.services;
 
 
 import com.driver.EntryDto.SubscriptionEntryDto;
+import com.driver.exception.AlreadyUpdatedException;
+import com.driver.exception.UserNotExistException;
 import com.driver.model.Subscription;
-import com.driver.model.SubscriptionType;
 import com.driver.model.User;
 import com.driver.repository.SubscriptionRepository;
 import com.driver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import static com.driver.model.SubscriptionType.*;
 
 @Service
 public class SubscriptionService {
@@ -25,8 +28,33 @@ public class SubscriptionService {
     public Integer buySubscription(SubscriptionEntryDto subscriptionEntryDto){
 
         //Save The subscription Object into the Db and return the total Amount that user has to pay
+        Optional<User> optionalUser = userRepository.findById(subscriptionEntryDto.getUserId());
+        if(optionalUser.isEmpty()){
+            throw new UserNotExistException("Invalid User Id");
+        }
 
-        return null;
+        User savedUser = optionalUser.get();
+
+        int totalAmount=0;
+        if(subscriptionEntryDto.getSubscriptionType()==BASIC) {
+            totalAmount = 500+ (200*subscriptionEntryDto.getNoOfScreensRequired());
+        }
+        else if(subscriptionEntryDto.getSubscriptionType()==PRO) {
+            totalAmount = 800+ (250*subscriptionEntryDto.getNoOfScreensRequired());
+        }
+        else if(subscriptionEntryDto.getSubscriptionType()==ELITE) {
+            totalAmount = 1000+ (350*subscriptionEntryDto.getNoOfScreensRequired());
+        }
+
+        Subscription subscription = new Subscription();
+        subscription.setSubscriptionType(subscriptionEntryDto.getSubscriptionType());
+        subscription.setUser(savedUser);
+        subscription.setNoOfScreensSubscribed(subscriptionEntryDto.getNoOfScreensRequired());
+        subscription.setTotalAmountPaid(totalAmount);
+
+        subscriptionRepository.save(subscription);
+
+        return totalAmount;
     }
 
     public Integer upgradeSubscription(Integer userId)throws Exception{
@@ -35,15 +63,38 @@ public class SubscriptionService {
         //In all other cases just try to upgrade the subscription and tell the difference of price that user has to pay
         //update the subscription in the repository
 
-        return null;
+        Optional<User> optionalUse = userRepository.findById(userId);
+        User user = optionalUse.get();
+        Subscription subscription = user.getSubscription();
+
+        int priceDiff =0;
+        if(subscription.getSubscriptionType()==ELITE){
+            throw new AlreadyUpdatedException("User Already Use Elite Subscription");
+        }
+        else if(subscription.getSubscriptionType()==BASIC){
+            subscription.setSubscriptionType(PRO);
+            priceDiff = (800+(250*subscription.getNoOfScreensSubscribed()))-subscription.getTotalAmountPaid();
+            subscriptionRepository.save(subscription);
+        }
+        else if(subscription.getSubscriptionType()==PRO){
+            subscription.setSubscriptionType(ELITE);
+            priceDiff = (1000+(350*subscription.getNoOfScreensSubscribed()))-subscription.getTotalAmountPaid();
+            subscriptionRepository.save(subscription);
+        }
+        return priceDiff;
     }
 
     public Integer calculateTotalRevenueOfHotstar(){
 
         //We need to find out total Revenue of hotstar : from all the subscriptions combined
         //Hint is to use findAll function from the SubscriptionDb
+        List<Subscription> subscriptionList = subscriptionRepository.findAll();
 
-        return null;
+        int revenue = 0;
+        for(Subscription subscription: subscriptionList){
+            revenue = subscription.getTotalAmountPaid()+revenue;
+        }
+        return revenue;
     }
 
 }

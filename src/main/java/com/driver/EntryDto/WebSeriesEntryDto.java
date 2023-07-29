@@ -8,7 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 public class WebSeriesEntryDto {
-
+    public WebSeriesEntryDto() {
+    }
 
     private String seriesName;
 

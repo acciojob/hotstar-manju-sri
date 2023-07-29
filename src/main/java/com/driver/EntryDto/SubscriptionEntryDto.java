@@ -4,6 +4,8 @@ import com.driver.model.SubscriptionType;
 
 
 public class SubscriptionEntryDto {
+    public SubscriptionEntryDto() {
+    }
 
     private int userId;
     private SubscriptionType subscriptionType;

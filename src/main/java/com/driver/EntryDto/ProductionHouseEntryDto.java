@@ -8,6 +8,10 @@ public class ProductionHouseEntryDto {
         this.name = name;
     }
 
+    public ProductionHouseEntryDto(){
+
+    }
+
     public String getName() {
         return name;
     }
