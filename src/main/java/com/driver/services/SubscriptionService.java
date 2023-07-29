@@ -62,7 +62,6 @@ public class SubscriptionService {
         //If you are already at an ElITE subscription : then throw Exception ("Already the best Subscription")
         //In all other cases just try to upgrade the subscription and tell the difference of price that user has to pay
         //update the subscription in the repository
-      try {
           Optional<User> optionalUse = userRepository.findById(userId);
           User user = optionalUse.get();
           Subscription subscription = user.getSubscription();
@@ -84,10 +83,6 @@ public class SubscriptionService {
           }
           subscriptionRepository.save(subscription);
           return priceDiff;
-      }
-      catch (Exception e){
-          return -1;
-      }
     }
 
     public Integer calculateTotalRevenueOfHotstar() throws Exception{
